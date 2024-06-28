@@ -53,6 +53,7 @@ If the firmware version has already been downloaded, you will instead get this o
 	./check-ecowitt-update -m GW1200 -d firmware -l logfile
 
 This will display to the screen:
+
 	Model:   GW1200B
 	Version: V1.3.1
 	Updates: - Added support for WS85.
@@ -62,6 +63,7 @@ This will display to the screen:
 	Successfully downloaded firmware V1.3.1 to firmware/GW1200-V1.3.1-4f4535d9ee80468cb18415e088ffd3e7.bin
 
 And it will add to the log file:
+
 	Date:    2024-06-27T21:31:20-07:00
 	Model:   GW1200B
 	Version: V1.3.1
