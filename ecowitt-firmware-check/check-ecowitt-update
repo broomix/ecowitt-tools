@@ -1,1 +1,288 @@
-/home/jon/ecowitt/firmware/check-ecowitt-update
+#!/bin/sh
+
+#
+# Check for Ecowitt firmware updates for the specified model of device.
+# [Known to work for GW1000, GW1200, GW2000, WN1820, WN1821, WN1920, WN1980,
+#  WS3800, WS3820, WS3900, WS3920, WS3921, and HP2550 as of June 2024.]
+#
+# This script uses the "version" API available at
+#	http://ota.ecowitt.net/api/ota/v1/version/info
+# This is the same API used by the firmware within the GW1100, GW1200, and
+# GW2000 when they check for available firmware updates.
+#
+#	Jonathan Broome
+#	jbroome@wao.com
+#	June 2024
+#
+
+# The easiest way to use this is like so:
+#
+#	check-ecowitt-update -m GW2000B -d images -l logfile -q
+#
+# This will check for firmware updates, log, and download them, as specified
+# by these options:
+#
+# . Use device model "GW2000B" ("-m GW2000B" option)
+# . If an update is available, download it to the "images" directory
+#   ("-d images" option)
+# . Log any updates to the file "logfile" ("-l logfile" option)
+# . Be quiet unless an update is available OR a fatal error occurs ("-q" option)
+#   (This is intended so the script can be run from "cron" without generating
+#    unnecessary noise.)
+
+
+# This function is used a few times to show the results.
+# The funky "sed" is to wrap changelog lines based on embedded \r\n sequences,
+# and to indent subsequent lines to match the preceding lines.
+showinfo()
+{
+	echo "Model:   $model"
+	echo "Version: $version"
+	echo "Updates: $changelog" | sed -e 's;\\r\\n;\
+         ;g'
+	echo "URL:     $url"
+}
+
+# initialize options:
+model=
+version=
+download=
+downloaddir=
+verbose=
+quiet=
+
+# get the script name into $progname, for use in error messages.
+progname=`basename $0`
+
+# where will we write log information? (use "-l filename" to override)
+logfile=
+
+# start by processing any options that may be specified on the command line:
+OPTSTRING="l:M:m:v:d:Vq"
+
+while getopts ${OPTSTRING} opt
+do
+	case ${opt} in
+	M)	# specify MAC address
+		mac="${OPTARG}"
+		;;
+	m)	# specify model - we will validate this if no version is specified
+		model="${OPTARG}"
+		;;
+	v)	# specify version
+		version="${OPTARG}"
+		# if the version string doesn't start with "V", prepend "V":
+		case "$version" in
+		v*|V*)	;;
+		*)	version="V${version}"
+			;;
+		esac
+		;;
+	l)	# specify a log file
+		logfile="${OPTARG}"
+		;;
+	d)	# download the file to this directory, too.
+		download=t
+		downloaddir="${OPTARG}"
+		;;
+	V)	# enable verbose mode
+		verbose=t
+		;;
+	q)	# enable quiet mode
+		quiet=t
+		;;
+	\?)	# error - unknown option
+		# getopts has already said something like "Illegal option -x"
+		echo "${progname}: invalid option specified." 1>&2
+		exit 1
+		;;
+	esac
+done
+
+[ -n "$verbose" ] && echo "$progname: model[$model] version[$version]"
+
+# Save the Ecowitt output to this filename, and use "trap" to remove it later:
+out=`mktemp -p /tmp update-info.XXXXXX`
+trap 'rm -f "$out"' HUP INT QUIT EXIT
+
+# Ecowitt doesn't seem to care about the actual MAC address, unless the
+# particular device needs special treatment (e.g. beta testing).
+if [ -z "$mac" ]; then		# MAC was not specified
+	# credit to gjr80 (Gary) on wxforum.net - generate a random MAC:
+	mac=`openssl rand -hex 6`
+fi
+
+# If the model wasn't specified on the command line, select the model now.
+# (NOTE that the GW1000 uses a different method, which is not supported here.)
+if [ -z "$model" ]; then
+	model="GW1100B"
+fi
+
+# Ensure model is uppercase, e.g. GW1100B:
+model=`echo "${model}" | /usr/bin/tr '[a-z]' '[A-Z]'`
+
+# The version number really just needs to be ANY valid version for the model:
+if [ -z "$version" ]; then
+	case "$model" in
+	GW1100[ABC])	version="V2.0.0" ;;	# minimum version for GW1100A/B/C
+	GW1100D)	version="V2.0.2" ;;	# minimum version for GW1100D
+	GW1200[ABCD])	version="V1.2.0" ;;	# minimum version for GW1200
+	GW2000[ABCD])	version="V3.0.0" ;;	# minimum version for GW2000
+	WN1820[ABCD])	version="V1.2.7" ;;	# minimum version for WN1820
+	WN1821[ABCD])	version="V1.2.7" ;;	# minimum version for WN1821
+	WN1920[ABCD])	version="V1.2.7" ;;	# minimum version for WN1920
+	WN1980[ABCD])	version="V1.2.7" ;;	# minimum version for WN1980
+	WS3800[ABCD])	version="V1.2.4" ;;	# minimum version for WS3800
+	WS3820[ABCD])	version="V1.2.7" ;;	# minimum version for WS3820
+	WS3900[ABCD])	version="V1.2.4" ;;	# minimum version for WS3900
+	WS3920[ABCD])	version="V1.2.7" ;;	# minimum version for WS3920
+	WS3921[ABCD])	version="V1.2.0" ;;	# minimum version for WS3921
+	HP2550)		version="V1.9.5" ;;	# minimum version for HP2550
+	*)				# unknown model
+		echo "$progname: unrecognized model [$model]" 1>&2
+		exit 2
+		;;
+	esac
+fi
+
+# Ensure version is also uppercase, e.g. V2.0.2:
+version=`echo "${version}" | /usr/bin/tr '[a-z]' '[A-Z]'`
+
+# On a system with md5sum instead of md5, define this alias:
+if ! type md5 >/dev/null 2>&1
+then
+	md5()
+	{
+		md5sum $* | sed -e 's/  *-$//'
+	}
+fi
+
+# Get the current Unix time in seconds:
+time=`/bin/date +"%s"`
+
+# If the MAC address doesn't have colons, insert them:
+case "$mac" in
+*:*:*:*:*:*)	;;
+*)	mac=`echo "$mac" | sed -e 's/\([0-9A-Fa-f]\{2\}\)/\1:/g' \
+				-e 's/\(.*\):$/\1/'`
+	;;
+esac
+
+# Translate the MAC address into all uppercase letters and replace colons
+# with '%3A' (URL encoding):
+mac=`echo "${mac}" | /usr/bin/tr '[a-z]' '[A-Z]' | sed -e 's/:/%3A/g'`
+
+# Build up the input/query string:
+str="id=${mac}&model=${model}&time=${time}&user=1&version=${version}"
+
+# Compute the signature, using the input string with "@ecowittnet" appended:
+sign=`echo -n "${str}@ecowittnet" | md5 | /usr/bin/tr '[a-z]' '[A-Z]'`
+
+# Add the signature part to the query string:
+str="${str}&sign=${sign}"
+
+# Build up the full URL for the query:
+queryurl="http://ota.ecowitt.net/api/ota/v1/version/info?${str}"
+
+[ -n "$verbose" ] && echo "url[$queryurl]"
+
+# Try to get the update information, trying a few times if needed:
+for try in 1 2 3 4 5 X
+do
+	# Now fetch the update information:
+	curl --silent -o $out "${queryurl}"
+	status=$?
+	if [ $status -ne 0 ]; then
+		echo "$progname: curl failed" 1>&2
+		exit $status
+	fi
+
+	# Check the output file for indication of success:
+	if ! grep -s '"msg":"Success"' $out >/dev/null 2>&1 &&
+	   ! grep -s '"msg":"The firmware is up to date"' $out >/dev/null 2>&1
+	then
+		# if the message is "Operation too frequent", try sleeping a few seconds and retrying.
+		if grep -s '"msg":"Operation too frequent"' $out >/dev/null 2>&1
+		then
+			if [ x"$try" = x"X" ]; then	# this is the last try.
+				echo "$progname: too many tries - quitting."
+				exit 4
+			fi
+			[ -z "$quiet" ] && echo "Retry - $try"
+			sleep $try	# the delay will increase with each retry
+			continue
+		fi
+
+		# Display the error message and quit:
+		echo -n "Failure: "
+		cat $out
+		echo ''
+
+		exit 5
+	fi
+	break
+done
+
+# Pull out the URL for the firmware and remove the backslashes:
+url=`sed -n -e 's/^.*"attach1file":"\(.*\.bin\)",.*$/\1/p' $out | tr -d '\\\\'`
+# The URL should look like so:
+#https://osswww.ecowitt.net/ota/20240126/68dfe9b8d7e459739e85f2ba44188cf2.bin
+
+# Get the version, which is called "name" in the output:
+version=`sed -n -e 's/^.*"name":"\([vV0-9\.]*\)",.*$/\1/p' $out`
+
+# Get the changelog text:
+changelog=`sed -n -e 's/^.*"content":"\(.*\)","attach1.*$/\1/p' $out`
+
+# If neither quiet nor downloading, show the results:
+[ -z "$quiet" -a -z "$download" ] && showinfo
+
+# If we want to download the file, do it now:
+if [ -n "$download" ]; then
+	sum=`echo "$url" | sed -n -e 's/^.*\/\([0-9a-f]\{32\}\)\.bin$/\1/p'`
+	if [ -z "$sum" ]; then	# sanity check - format may have changed?
+		echo "$progname: couldn't parse file name in URL" 1>&2
+		exit 6
+	fi
+	# strip the trailing A/B/C/D from the model, as the firmware
+	# seems to be the same for all the variants:
+	basemodel=`echo "$model" | sed -e 's/^\(.*\)[A-D]$/\1/'`
+
+	# make the output filename like this, with model and version:
+	#	GW1100-V2.3.1-68dfe9b8d7e459739e85f2ba44188cf2.bin
+	# NOTE that this method will need changing if Ecowitt changes the
+	# format of the URL appreciably.
+	binfile="$downloaddir/$basemodel-$version-$sum.bin"
+
+	# If we already have the file, don't download it again:
+	if [ -f "$binfile" ]; then
+		[ -z "$quiet" ] && echo "$progname: already have $binfile"
+		exit 0
+	fi
+
+	# Show the results now:
+	showinfo
+
+	# Let's finally download the file:
+	[ -n "$verbose" ] && echo "Downloading firmware ${version} ..."
+	curl --silent --remote-time -o "$binfile" "$url"
+	if [ $? -ne 0 ]; then
+		echo "$progname: failed to download firmware from $url to $binfile" 1>&2
+		exit 7
+	fi
+	echo "Successfully downloaded firmware ${version} to ${binfile}"
+	echo ""
+
+	# Add the information to the log file:
+	if [ -n "$logfile" ]; then
+	      (
+		echo "Date:    `/bin/date -Iseconds`"
+		showinfo
+		echo "file:    ${binfile}"
+		echo ""
+	      ) >> $logfile
+	fi
+fi
+
+# All done.
+exit 0
