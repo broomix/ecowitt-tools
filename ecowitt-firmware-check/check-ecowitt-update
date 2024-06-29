@@ -135,6 +135,7 @@ if [ -z "$version" ]; then
 	WS3800[ABCD])	version="V1.2.4" ;;	# minimum version for WS3800
 	WS3820[ABCD])	version="V1.2.7" ;;	# minimum version for WS3820
 	WS3900[ABCD])	version="V1.2.4" ;;	# minimum version for WS3900
+	WS3901[ABCD])	version="V1.2.4" ;;	# minimum version for WS3901
 	WS3920[ABCD])	version="V1.2.7" ;;	# minimum version for WS3920
 	WS3921[ABCD])	version="V1.2.0" ;;	# minimum version for WS3921
 	HP2550)		version="V1.9.5" ;;	# minimum version for HP2550
