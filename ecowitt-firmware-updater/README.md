@@ -23,9 +23,9 @@ please let me know the outcome, and I will update this list.
 
 
 > [!IMPORTANT]
-> READ THIS WARNING: You may see a significant pause after the updater
-> prints the message "file size is NNNNNNN bytes.", before it displays
-> ">>> start".  This appears to be due to the device taking a few seconds
+> You may see a significant pause after the updater
+> prints the message "_file size is NNNNNNN bytes._", before it displays
+> "**>>> start**".  This appears to be due to the device taking a few seconds
 > to prepare its internal flash memory where the new firmware will be
 > stored. DO NOT WORRY - the device is functioning properly.
 
@@ -76,7 +76,7 @@ please let me know the outcome, and I will update this list.
 	sending packet    2 - 1024 bytes   - sent=2048
 	>>> continue
 	sending packet    3 - 1024 bytes   - sent=3072
-	{ ... ]
+	[ ... ]
 	>>> continue
 	sending packet 1572 - 1024 bytes   - sent=1609728
 	>>> continue
@@ -90,7 +90,7 @@ please let me know the outcome, and I will update this list.
 
 
 3. Note that the older ESP8266-based devices (specifically the GW1000) require
-   both a "user1" and "user2" firmware file - if you try to update one of these
+   **both** a "user1" and "user2" firmware file - if you try to update one of these
    devices without specifying the second (user2) file, you will receive this
    error if the device requests the "user2" file:
 
