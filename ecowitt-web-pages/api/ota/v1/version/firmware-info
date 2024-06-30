@@ -1,0 +1,68 @@
+#
+#	This file needs to be updated to add new versions of the firmware
+#	available for each model of device.  It will be read by info.php
+#
+
+# base the files from here.
+urlbase	http://ota.ecowitt.net/firmware
+
+# These are the firmware versions that we have for each of the devices:
+
+model GW1100
+	firmware V2.0.6
+	file	GW1100-V2.0.6-63bf599c5070fdb1cc5daf0807c2c038.bin
+	log	GW1100 V2.0.6 firmware
+
+	firmware V2.1.8
+	file	GW1100-V2.1.8-db2869ec13962015c813128b74693d13.bin
+	log	GW1100 V2.1.8 firmware
+
+	firmware V2.3.1
+	file	GW1100-V2.3.1-68dfe9b8d7e459739e85f2ba44188cf2.bin
+	log	GW1100 V2.3.1 firmware
+
+	firmware V2.3.2
+	file	GW1100-V2.3.2-568ad1f21d0fe5e612b0e1ae4b7adcdd.bin
+	log	1.Support ws85 sensor.\r\n2.Fixed some known bugs.
+
+	# Hold back 30:83:98:7a:e2:9d to version 2.1.8:
+	want V2.1.8 for 30:83:98:7a:e2:9d
+
+
+model GW1200
+	firmware V1.2.2
+	file	GW1200-V1.2.2-121b22940849e4190c5dd59705dd375c.bin
+	log	GW1200 V1.2.2 firmware
+
+	firmware V1.2.8
+	file	GW1200-V1.2.8-c63ef3ec41b6c8d9e7e8a40cdcde0658.bin
+	log	GW1200 V1.2.8 firmware
+
+	firmware V1.3.0
+	file	GW1200-V1.3.0-fa57569a964b6a851a4537bb50a2910a.bin
+	log	- Added support for WS85.\r\n- Fixed some known bug.
+
+	firmware V1.3.1
+	file	GW1200-V1.3.1-4f4535d9ee80468cb18415e088ffd3e7.bin
+	log	- Added support for WS85.\r\n- Fixed for WH46 transmitter not receiving.\r\n- Fixed some known bug.
+
+
+model	GW2000
+	firmware V3.0.8
+	file	GW2000-V3.0.8-1e6eb7166c1ee86925d08fabe66ebbcf.bin
+	log	GW2000 V3.0.8 firmware
+
+	firmware V3.1.1
+	file	GW2000-V3.1.1-c37c7a836117677afea0dcec349d52c3.bin
+	log	GW2000 V3.1.1 firmware
+
+	firmware V3.1.2
+	file	GW2000-V3.1.2-d0230943cdf23c9469244c49e32bc0e1.bin
+	log	- Fix the memory leaks and some known crashes.\r\n- T&HP sensor can replace indoor temperature, humidity, pressure data.\r\n- Fixed a bug when wifi is turned off.
+
+	firmware V3.1.3
+	file	GW2000-V3.1.3-fedec1810580d5bc0b8a0c26c057202c.bin
+	log	- Support ws85 sensor.\r\n- Support local web pages to control IOT sub-devices.
+
+	# Hold this one device back a few revs.
+	want V3.1.1 for A0:A3:B3:C6:9B:FC
