@@ -1,4 +1,4 @@
-Ecowitt Firmware Updater
+# Ecowitt Firmware Updater
   Jonathan Broome
   jbroome@wao.com
   June 2024
@@ -14,7 +14,7 @@ quite successfully with this utility.  If you try it on something else,
 please let me know the outcome, and I will update this list.
 
 
-How to build it:
+## How to build it:
 
 0. Just Build It. This should be as simple as typing "make", assuming your
    system has the standard C compiler tools installed.  It does not require
@@ -22,20 +22,21 @@ How to build it:
    system, including the Raspberry Pi.
 
 
-** READ THIS WARNING: You may see a significant pause after the updater
-** prints the message "file size is NNNNNNN bytes.", before it displays
-** ">>> start".  This appears to be due to the device taking a few seconds
-** to prepare its internal flash memory where the new firmware will be
-** stored. DO NOT WORRY - the device is functioning properly.
+** READ THIS WARNING: You may see a significant pause after the updater **
+** prints the message "file size is NNNNNNN bytes.", before it displays **
+** ">>> start".  This appears to be due to the device taking a few seconds **
+** to prepare its internal flash memory where the new firmware will be **
+** stored. DO NOT WORRY - the device is functioning properly. **
 
 
-How to use it:
+## How to use it:
 
 1. First, verify that the updater can connect to your device and query its
    current mac address model number, and firmware version. This will NOT
    make any changes to your device.  You may specify either a hostname
    OR an IP address after the "-h" option:
 
+	`
 	$ ./ecowitt-firmware-updater -h gw1000-433
 	MAC Address [24:62:ab:16:fd:0d]
 	Firmware Version [GW1000_V1.6.9]
@@ -47,6 +48,7 @@ How to use it:
 	$ ./ecowitt-firmware-updater -h gw1200-915
 	MAC Address [dc:da:0c:f4:2f:49]
 	Firmware Version [GW1200B_V1.2.2]
+	`
 
 
 2. If you are ready to update the firmware in the device, invoke the updater
@@ -55,6 +57,7 @@ How to use it:
 
    For example, to update the GW1200 device shown above, use a command such as this:
 
+	`
 	$ ./ecowitt-firmware-updater -h gw1200-915 -u firmware/GW1200-V1.3.1-4f4535d9ee80468cb18415e088ffd3e7.bin
 
 	MAC Address [dc:da:0c:f4:2f:49]
@@ -82,6 +85,7 @@ How to use it:
 	>>> end
 	Client closed the connection.
 	do_firmware_service: sent total of 1574 packets, 1611376 bytes.
+	`
 
 
 3. Note that the older ESP8266-based devices (specifically the GW1000) require
@@ -89,6 +93,7 @@ How to use it:
    devices without specifying the second (user2) file, you will receive this
    error if the device requests the "user2" file:
 
+	`
 	$ ./ecowitt-firmware-updater -h gw1000-433 -u firmware/gw1000/gw1000_user1_177.bin
 
 	MAC Address [24:62:ab:16:fd:0d]
@@ -103,11 +108,13 @@ How to use it:
 	*** ecowitt-firmware-updater: device requested user2, but second firmware image was not specified ***
 
 	Firmware update failed.
+	`
 
 
    You should be able to repeat the command, adding the second image to the
    command line, like so:
 
+	`
 	$ ./ecowitt-firmware-updater -h gw1000-433 -u firmware/gw1000/gw1000_user1_177.bin firmware/gw1000/gw1000_user2_177.bin
 
 	MAC Address [24:62:ab:16:fd:0d]
@@ -134,4 +141,5 @@ How to use it:
 	>>> end
 	Client closed the connection.
 	do_firmware_service: sent total of 396 packets, 404932 bytes.
+	`
 
