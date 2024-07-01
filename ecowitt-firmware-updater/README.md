@@ -22,12 +22,6 @@ please let me know the outcome, and I will update this list.
    system, including the Raspberry Pi.
 
 
-> [!IMPORTANT]
-> You may see a significant pause after the updater
-> prints the message "_file size is NNNNNNN bytes._", before it displays
-> "**>>> start**".  This appears to be due to the device taking a few seconds
-> to prepare its internal flash memory where the new firmware will be
-> stored. DO NOT WORRY - the device is functioning properly.
 
 
 ## How to use it:
@@ -51,6 +45,13 @@ please let me know the outcome, and I will update this list.
 	Firmware Version [GW1200B_V1.2.2]
 ```
 
+
+> [!IMPORTANT]
+> When you run the update command below, you may see a significant pause after the updater
+> prints the message "_file size is NNNNNNN bytes._", before it displays
+> "**>>> start**".  This appears to be due to the device taking a few seconds
+> to prepare its internal flash memory where the new firmware will be
+> stored. DO NOT WORRY - the device is functioning properly.
 
 2. If you are ready to update the firmware in the device, invoke the updater
    with the "-u" option to perform the update, and specify the name of the
