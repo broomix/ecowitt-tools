@@ -25,6 +25,10 @@ model GW1100
 	file	GW1100-V2.3.2-568ad1f21d0fe5e612b0e1ae4b7adcdd.bin
 	log	1.Support ws85 sensor.\r\n2.Fixed some known bugs.
 
+	firmware V2.3.3
+	file	GW1100-V2.3.3-818c81b00866afbaf227d21d1b44e4ae.bin
+	log	- Optimize RF reception performance
+
 	# Hold back 30:83:98:7a:e2:9d to version 2.1.8:
 	want V2.1.8 for 30:83:98:7a:e2:9d
 
@@ -63,6 +67,10 @@ model	GW2000
 	firmware V3.1.3
 	file	GW2000-V3.1.3-fedec1810580d5bc0b8a0c26c057202c.bin
 	log	- Support ws85 sensor.\r\n- Support local web pages to control IOT sub-devices.
+
+	firmware V3.1.4
+	file	GW2000-V3.1.4-2c83b647854e9a1c0ba560ec96082776.bin
+	log	- Optimize RF reception performance
 
 	# Hold this one device back a few revs.
 	want V3.1.1 for A0:A3:B3:C6:9B:FC
