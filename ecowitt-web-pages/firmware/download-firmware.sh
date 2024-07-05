@@ -19,6 +19,7 @@ GW1100-V2.3.3-818c81b00866afbaf227d21d1b44e4ae.bin	https://oss.ecowitt.net/ota/2
 GW1200-V1.2.8-c63ef3ec41b6c8d9e7e8a40cdcde0658.bin	https://osswww.ecowitt.net/ota/20240219/c63ef3ec41b6c8d9e7e8a40cdcde0658.bin
 GW1200-V1.3.0-fa57569a964b6a851a4537bb50a2910a.bin	https://osswww.ecowitt.net/ota/20240427/fa57569a964b6a851a4537bb50a2910a.bin
 GW1200-V1.3.1-4f4535d9ee80468cb18415e088ffd3e7.bin	https://osswww.ecowitt.net/ota/20240429/4f4535d9ee80468cb18415e088ffd3e7.bin
+GW1200-V1.3.2-fd0b98b0f7e7f6b3598fd5aaa6a6c7cc.bin	https://oss.ecowitt.net/ota/20240704/fd0b98b0f7e7f6b3598fd5aaa6a6c7cc.bin
 GW2000-V3.1.2-d0230943cdf23c9469244c49e32bc0e1.bin	https://osswww.ecowitt.net/ota/20240312/d0230943cdf23c9469244c49e32bc0e1.bin
 GW2000-V3.1.3-fedec1810580d5bc0b8a0c26c057202c.bin	https://oss.ecowitt.net/ota/20240521/fedec1810580d5bc0b8a0c26c057202c.bin
 GW2000-V3.1.4-2c83b647854e9a1c0ba560ec96082776.bin	https://oss.ecowitt.net/ota/20240621/2c83b647854e9a1c0ba560ec96082776.bin
@@ -27,3 +28,4 @@ WN1820-V1.2.8-0a4e883b2fed37bf2edbcc77c744c420.bin	https://osswww.ecowitt.net/ot
 WN1820-V1.3.0-35273a44565d572fb1b62716f21f306c.bin	https://osswww.ecowitt.net/ota/20240430/35273a44565d572fb1b62716f21f306c.bin
 WS3800-V1.2.8.1-43ebdcb4964e074d406bfa3a2bf76bb4.bin	https://osswww.ecowitt.net/ota/20240325/43ebdcb4964e074d406bfa3a2bf76bb4.bin
 EOF
+

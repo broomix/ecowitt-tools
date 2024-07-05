@@ -50,6 +50,10 @@ model GW1200
 	file	GW1200-V1.3.1-4f4535d9ee80468cb18415e088ffd3e7.bin
 	log	- Added support for WS85.\r\n- Fixed for WH46 transmitter not receiving.\r\n- Fixed some known bug.
 
+	firmware V1.3.2
+	file	GW1200-V1.3.2-fd0b98b0f7e7f6b3598fd5aaa6a6c7cc.bin
+	log	- Optimize RF reception performance\r\n- The TCP/IP protocol supports obtaining heap size.
+
 
 model	GW2000
 	firmware V3.0.8
